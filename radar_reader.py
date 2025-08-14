@@ -180,14 +180,14 @@ def main():
     FRAME_BUFFER_SECS = 10               # 緩衝 10 秒（可再調）
     BUF_MAX_FRAMES = int(FRAME_BUFFER_SECS / FRAME_DUR_S)
     buf_frames = deque(maxlen=BUF_MAX_FRAMES)
-    if args.hotkey:
-        def _hotkey_listener():
-            for line in sys.stdin:
-                if line.strip().lower() == "q":
-                    stop_flag["stop"] = True
-                    print("[info] Stop requested (hotkey 'q').")
-                    break
-        threading.Thread(target=_hotkey_listener, daemon=True).start()
+
+    def _hotkey_listener():
+        for line in sys.stdin:
+            if line.strip().lower() == "q":
+                stop_flag["stop"] = True
+                print("[info] Stop requested (hotkey 'q').")
+                break
+    threading.Thread(target=_hotkey_listener, daemon=True).start()
 
     # Output file names
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -436,7 +436,6 @@ def parse_args():
     p.add_argument("--frames", type=int, default=None, help="Record N frames then stop")
     p.add_argument("--pulses", type=int, default=None, help="Stop after N debounced beacon pulses")
     p.add_argument("--idle", type=float, default=None, help="Stop if no bytes arrive for N seconds")
-    p.add_argument("--hotkey", action="store_true", help="Enable 'q'+Enter to stop")
     p.add_argument("--outdir", type=str, default="radar", help="Output directory for CSV/PNG files")
     p.add_argument("--sync-on-beacon", action="store_true",
                help="Wait for the first beacon edge, then start saving aligned at that edge (t=0)")
